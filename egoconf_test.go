@@ -44,16 +44,39 @@ func TestLoad(t *testing.T) {
 	}
 
 	//Yaml
-	err := Save("config", YML, c)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	c1 := Config{}
-	err = Load("config", &c1)
+	err := Save("config.yml", c)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println(c1)
 
+	c1 := Config{}
+	err = Load("config.yml", &c1)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Yml: %v\n", c1)
+
+	//Json
+	err = Save("config.json", c)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = Load("config.json", &c1)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Json: %v\n", c1)
+
+	//Xml
+	err = Save("config.xml", c)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = Load("config.xml", &c1)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Xml: %v\n", c1)
 }

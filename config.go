@@ -1,7 +1,6 @@
 package egoconf
 
 import (
-	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -45,15 +44,15 @@ func getPath(filename string) (string, error) {
 
 //Сохраняем конфигурацию
 //i interface - любая структура
-func Save(filename string, ext Extension,  i interface{}) error {
+func Save(filename string, i interface{}) error {
 
 	Path, err := getPath(filename)
 	if err != nil {
 		return err
 	}
 
-	//Добовляем расширение
-	Path += ext.String()
+	//Получаем расширение файла
+	ext := getFileExtension(Path)
 
 	//Создаем и открываем файл
 	file, err := os.Create(Path)
@@ -77,10 +76,9 @@ func Save(filename string, ext Extension,  i interface{}) error {
 	return nil
 }
 
+//Либо указываем расширение файла (приоритет),
+//либо указываем Extension
 func Load(filename string, i interface{}) error {
-
-	//Получаем Extension на основе расширения файла
-	ext := getFileExtension(filename)
 
 	//Получаем путь до файла
 	Path, err := getPath(filename)
@@ -88,14 +86,13 @@ func Load(filename string, i interface{}) error {
 		return err
 	}
 
+	//Получаем Extension на основе расширения файла
+	ext := getFileExtension(Path)
+
 	//Если нет файла то создаём и сохраняем с сериализованными данными
 	_, err = os.Stat(Path)
 	if os.IsNotExist(err) {
-		err = Save(Path, YML, i)
-		if err != nil {
-			return err
-		}
-		return errors.New("Файл был только что создан, его нужно отредактировать!")
+		return err
 	}
 
 	//Читаем данные из файла
@@ -112,5 +109,3 @@ func Load(filename string, i interface{}) error {
 
 	return nil
 }
-
-

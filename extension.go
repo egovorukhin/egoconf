@@ -14,8 +14,8 @@ const (
 	NONE Extension = ""
 	JSON Extension = ".json"
 	XML  Extension = ".xml"
-	YML Extension = ".yml"
 	YAML Extension = ".yaml"
+	YML  Extension = ".yml"
 )
 
 //Возвращаем расширение файла
@@ -34,7 +34,7 @@ func (ext Extension) marshal(v interface{}) ([]byte, error) {
 		return xml.Marshal(v)
 	}
 
-	return nil, errors.New("configExtension is not correctly")
+	return nil, errors.New("Extension is not correctly")
 }
 
 func (ext Extension) unmarshal(b []byte, v interface{}) error {
@@ -48,12 +48,12 @@ func (ext Extension) unmarshal(b []byte, v interface{}) error {
 		return xml.Unmarshal(b, v)
 	}
 
-	return errors.New("configExtension is not correctly")
+	return errors.New("Extension is not correctly")
 }
 
-//Получаем расширение файла и ссотносим его с константой
-func getFileExtension(filename string) Extension {
-	switch filepath.Ext(filename) {
+//Получаем расширение файла и соотносим его с константой
+func getFileExtension(path string) Extension {
+	switch filepath.Ext(path) {
 	case JSON.String():
 		return JSON
 	case XML.String():

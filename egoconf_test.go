@@ -6,23 +6,23 @@ import (
 )
 
 type Config struct {
-	Ports    Ports    `json:"ports"`
-	Postgres Postgres `json:"postgres"`
+	Ports    Ports    `json:"ports" yaml:"ports"`
+	Postgres Postgres `json:"postgres" yaml:"postgres"`
 }
 
 type Ports struct {
-	Http  string `json:"http"`
-	Https string `json:"https"`
-	Udp   string `json:"udp"`
+	Http  string `json:"http" yaml:"http"`
+	Https string `json:"https" yaml:"https"`
+	Udp   string `json:"udp" yaml:"udp"`
 }
 
 type Postgres struct {
-	Server   string `json:"server"`
-	Port     string `json:"port"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	SSL      bool   `json:"ssl"`
+	Server   string `json:"server" yaml:"server"`
+	Port     string `json:"port" yaml:"port"`
+	Username string `json:"username" yaml:"username"`
+	Password string `json:"password" yaml:"password"`
+	Name     string `json:"name" yaml:"name"`
+	SSL      bool   `json:"ssl" yaml:"ssl"`
 }
 
 func TestLoad(t *testing.T) {

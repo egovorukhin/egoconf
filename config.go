@@ -91,7 +91,6 @@ func Load(filename string, i interface{}) error {
 	ext := getFileExtension(Path)
 
 	if ext != INI {
-
 		// Если нет файла, то создаём и сохраняем с сериализованными данными
 		_, err = os.Stat(Path)
 		if os.IsNotExist(err) {
@@ -110,7 +109,7 @@ func Load(filename string, i interface{}) error {
 			return err
 		}
 	} else {
-		// Заполняем структуру *ini.File
+		// Заполняем структуру
 		return ini.MapTo(i, Path)
 	}
 

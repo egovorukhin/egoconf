@@ -6,23 +6,23 @@ import (
 )
 
 type Config struct {
-	Ports    Ports    `json:"ports" yaml:"ports"`
-	Postgres Postgres `json:"postgres" yaml:"postgres"`
+	Ports    `json:"ports" yaml:"ports" ini:"ports"`
+	Postgres `json:"postgres" yaml:"postgres" ini:"postgres"`
 }
 
 type Ports struct {
-	Http  string `json:"http" yaml:"http"`
-	Https string `json:"https" yaml:"https"`
-	Udp   string `json:"udp" yaml:"udp"`
+	Http  string `json:"http" yaml:"http" ini:"http"`
+	Https string `json:"https" yaml:"https" ini:"https"`
+	Udp   string `json:"udp" yaml:"udp" ini:"udp"`
 }
 
 type Postgres struct {
-	Server   string `json:"server" yaml:"server"`
-	Port     string `json:"port" yaml:"port"`
-	Username string `json:"username" yaml:"username"`
-	Password string `json:"password" yaml:"password"`
-	Name     string `json:"name" yaml:"name"`
-	SSL      bool   `json:"ssl" yaml:"ssl"`
+	Server   string `json:"server" yaml:"server" ini:"server"`
+	Port     string `json:"port" yaml:"port" ini:"port"`
+	Username string `json:"username" yaml:"username" ini:"username"`
+	Password string `json:"password" yaml:"password" ini:"password"`
+	Name     string `json:"name" yaml:"name" ini:"name"`
+	SSL      bool   `json:"ssl" yaml:"ssl" ini:"ssl"`
 }
 
 func TestLoad(t *testing.T) {
@@ -34,7 +34,7 @@ func TestLoad(t *testing.T) {
 			Udp:   "6565",
 		},
 		Postgres: Postgres{
-			Server:   "server",
+			Server:   "localhost",
 			Port:     "5432",
 			Username: "user",
 			Password: "pass",
@@ -68,7 +68,7 @@ func TestLoad(t *testing.T) {
 	}
 	fmt.Printf("Json: %v\n", c1)
 
-	//Xml
+	//xml
 	err = Save("config.xml", c)
 	if err != nil {
 		t.Error(err)
@@ -79,4 +79,12 @@ func TestLoad(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("Xml: %v\n", c1)
+
+	//ini
+	var cfg Config
+	err = Load("config.ini", &cfg)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("ini: %v\n", cfg)
 }

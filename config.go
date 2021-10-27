@@ -1,31 +1,32 @@
 package egoconf
 
 import (
+	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
-//Возвращаем путь до лога
+// Возвращаем путь до лога
 func getPath(filename string) (string, error) {
 
-	//Если укахан абсолютный путь,
-	//то выходим и используем его
+	// Если укахан абсолютный путь,
+	// то выходим и используем его
 	if filepath.IsAbs(filename) {
 		return filename, nil
 	}
 
-	//Определяем путь до приложения
+	// Определяем путь до приложения
 	app, err := os.Executable()
 	if err != nil {
 		return "", err
 	}
 
-	//Получаем путь директории приложения
-	//и путь директории указанного файла конфигурации
+	// Получаем путь директории приложения
+	// и путь директории указанного файла конфигурации
 	Path := filepath.Join(filepath.Dir(app), filepath.Dir(filename))
 
-	//Проверяем на существование директории
+	// Проверяем на существование директории
 	if _, err := os.Stat(Path); os.IsNotExist(err) {
 
 		//Если нет директорий, то создаём их
@@ -42,8 +43,8 @@ func getPath(filename string) (string, error) {
 	return filepath.Join(Path, filepath.Base(filename)), nil
 }
 
-//Сохраняем конфигурацию
-//i interface - любая структура
+// Save Сохраняем конфигурацию
+// i interface - любая структура
 func Save(filename string, i interface{}) error {
 
 	Path, err := getPath(filename)
@@ -76,8 +77,8 @@ func Save(filename string, i interface{}) error {
 	return nil
 }
 
-//Либо указываем расширение файла (приоритет),
-//либо указываем Extension
+// Load Либо указываем файл ОБЯЗАТЕЛЬНО С РАСШИРЕНИЕМ файла,
+// по нему будем определять сериализатор
 func Load(filename string, i interface{}) error {
 
 	//Получаем путь до файла
@@ -86,25 +87,31 @@ func Load(filename string, i interface{}) error {
 		return err
 	}
 
-	//Получаем Extension на основе расширения файла
+	// Получаем Extension на основе расширения файла
 	ext := getFileExtension(Path)
 
-	//Если нет файла то создаём и сохраняем с сериализованными данными
-	_, err = os.Stat(Path)
-	if os.IsNotExist(err) {
-		return err
-	}
+	if ext != INI {
 
-	//Читаем данные из файла
-	file, err := ioutil.ReadFile(Path)
-	if err != nil {
-		return err
-	}
+		// Если нет файла, то создаём и сохраняем с сериализованными данными
+		_, err = os.Stat(Path)
+		if os.IsNotExist(err) {
+			return err
+		}
 
-	//Десериализуем данные в струтуру
-	err = ext.unmarshal(file, i)
-	if err != nil {
-		return err
+		// Читаем данные из файла
+		file, err := ioutil.ReadFile(Path)
+		if err != nil {
+			return err
+		}
+
+		// Десериализуем данные в струтуру
+		err = ext.unmarshal(file, i)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Заполняем структуру *ini.File
+		return ini.MapTo(i, Path)
 	}
 
 	return nil

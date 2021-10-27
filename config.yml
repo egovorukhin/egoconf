@@ -1,11 +1,11 @@
 ports:
-  http: "80"
-  https: "443"
-  udp: "6565"
+    http: "80"
+    https: "443"
+    udp: "6565"
 postgres:
-  server: server
-  port: "5432"
-  username: user
-  password: pass
-  name: db
-  ssl: false
+    server: localhost
+    port: "5432"
+    username: user
+    password: pass
+    name: db
+    ssl: false

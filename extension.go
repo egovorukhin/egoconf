@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+
 	"gopkg.in/yaml.v3"
 	"path/filepath"
 )
@@ -12,10 +13,11 @@ type Extension string
 
 const (
 	NONE Extension = ""
-	JSON Extension = ".json"
-	XML  Extension = ".xml"
-	YAML Extension = ".yaml"
-	YML  Extension = ".yml"
+	JSON           = ".json"
+	XML            = ".xml"
+	YAML           = ".yaml"
+	YML            = ".yml"
+	INI            = ".ini"
 )
 
 //Возвращаем расширение файла
@@ -53,16 +55,19 @@ func (ext Extension) unmarshal(b []byte, v interface{}) error {
 
 //Получаем расширение файла и соотносим его с константой
 func getFileExtension(path string) Extension {
-	switch filepath.Ext(path) {
-	case JSON.String():
-		return JSON
-	case XML.String():
-		return XML
-	case YAML.String():
-		return YAML
-	case YML.String():
-		return YML
-	default:
-		return NONE
-	}
+	return Extension(filepath.Ext(path))
+	/*	switch filepath.Ext(path) {
+		case JSON:
+			return JSON
+		case XML:
+			return XML
+		case YAML:
+			return YAML
+		case YML:
+			return YML
+		case INI:
+			return INI
+		default:
+			return NONE
+		}*/
 }

@@ -1,1 +1,1 @@
-<Config><Ports><Http>80</Http><Https>443</Https><Udp>6565</Udp></Ports><Postgres><Server>server</Server><Port>5432</Port><Username>user</Username><Password>pass</Password><Name>db</Name><SSL>false</SSL></Postgres></Config>
+<Config><Http>80</Http><Https>443</Https><Udp>6565</Udp><Server>localhost</Server><Port>5432</Port><Username>user</Username><Password>pass</Password><Name>db</Name><SSL>false</SSL></Config>

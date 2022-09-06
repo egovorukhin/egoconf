@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"gopkg.in/ini.v1"
 
 	"gopkg.in/yaml.v3"
 	"path/filepath"
@@ -20,7 +21,7 @@ const (
 	INI            = ".ini"
 )
 
-//Возвращаем расширение файла
+// Возвращаем расширение файла
 func (ext Extension) String() string {
 	return string(ext)
 }
@@ -48,12 +49,14 @@ func (ext Extension) unmarshal(b []byte, v interface{}) error {
 		return json.Unmarshal(b, v)
 	case XML:
 		return xml.Unmarshal(b, v)
+	case INI:
+		return ini.MapTo(v, string(b))
 	}
 
 	return errors.New("Extension is not correctly")
 }
 
-//Получаем расширение файла и соотносим его с константой
+// Получаем расширение файла и соотносим его с константой
 func getFileExtension(path string) Extension {
 	return Extension(filepath.Ext(path))
 	/*	switch filepath.Ext(path) {

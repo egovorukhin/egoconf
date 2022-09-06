@@ -86,5 +86,5 @@ func TestLoad(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("ini: %v\n", cfg)
+	fmt.Printf("Ini: %v\n", cfg)
 }

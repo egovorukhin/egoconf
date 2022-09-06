@@ -1,8 +1,6 @@
 package egoconf
 
 import (
-	"gopkg.in/ini.v1"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -89,29 +87,22 @@ func Load(filename string, i interface{}) error {
 
 	// Получаем Extension на основе расширения файла
 	ext := getFileExtension(Path)
-
+	// Файл или имя файла
+	file := []byte(Path)
 	if ext != INI {
+
 		// Если нет файла, то создаём и сохраняем с сериализованными данными
 		_, err = os.Stat(Path)
 		if os.IsNotExist(err) {
 			return err
 		}
-
 		// Читаем данные из файла
-		file, err := ioutil.ReadFile(Path)
+		file, err = os.ReadFile(Path)
 		if err != nil {
 			return err
 		}
-
-		// Десериализуем данные в струтуру
-		err = ext.unmarshal(file, i)
-		if err != nil {
-			return err
-		}
-	} else {
-		// Заполняем структуру
-		return ini.MapTo(i, Path)
 	}
 
-	return nil
+	// Десериализуем данные в струтуру
+	return ext.unmarshal(file, i)
 }

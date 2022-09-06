@@ -43,17 +43,17 @@ go get github.com/egovorukhin/egoconf
 ```
 
 * **config.xml**
-```
-  <Config>
-    <Host>server</Host>
-    <Port>5432</Port>
-    <Username>user</Username>
-    <Password>pass</Password>
-    <DBName>name</DBName>
+```xml
+<Config>
+  <Host>server</Host>
+  <Port>5432</Port>
+  <Username>user</Username>
+  <Password>pass</Password>
+  <DBName>name</DBName>
 </Config>
 ```
 * **config.json**
-```
+```json
 {
     "host": "server",
     "port": 5432,
@@ -63,6 +63,18 @@ go get github.com/egovorukhin/egoconf
 }
 ```
 * **config.ini**
+```ini
+host = server
+port = 5432
+username = user
+password = pass
+dbName = name
 ```
-
+* **config.yml**
+```yaml
+host: cce-ucdev1-lt3.hq.bc
+port: 5432
+username: eduser
+password: V4KRTksmHVPnZ8
+dbName: education
 ```

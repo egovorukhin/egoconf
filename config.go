@@ -41,17 +41,20 @@ func getPath(filename string) (string, error) {
 	return filepath.Join(Path, filepath.Base(filename)), nil
 }
 
-// Save Сохраняем конфигурацию
-// i interface - любая структура
-func Save(filename string, i interface{}) error {
-
+// SaveExtension передаем переопределенный интерфейс для своих расширений
+func SaveExtension(filename string, i interface{}, ext IExtension) error {
 	Path, err := getPath(filename)
 	if err != nil {
 		return err
 	}
 
-	//Получаем расширение файла
-	ext := getFileExtension(Path)
+	if ext == nil {
+		//Получаем расширение файла
+		ext, err = getFileExtension(Path)
+		if err != nil {
+			return err
+		}
+	}
 
 	//Создаем и открываем файл
 	file, err := os.Create(Path)
@@ -61,7 +64,7 @@ func Save(filename string, i interface{}) error {
 	}
 
 	//Сериализуем данные
-	buffer, err := ext.marshal(i)
+	buffer, err := ext.Marshal(i)
 	if err != nil {
 		return err
 	}
@@ -75,34 +78,49 @@ func Save(filename string, i interface{}) error {
 	return nil
 }
 
-// Load Либо указываем файл ОБЯЗАТЕЛЬНО С РАСШИРЕНИЕМ файла,
-// по нему будем определять сериализатор
-func Load(filename string, i interface{}) error {
+// Save Сохраняем конфигурацию. i interface - любая структура
+func Save(filename string, i interface{}) error {
+	return SaveExtension(filename, i, nil)
+}
+
+// LoadExtension передаем переопределенный интерфейс для своих расширений
+func LoadExtension(filename string, i interface{}, ext IExtension) error {
 
 	//Получаем путь до файла
-	Path, err := getPath(filename)
+	p, err := getPath(filename)
 	if err != nil {
 		return err
 	}
 
-	// Получаем Extension на основе расширения файла
-	ext := getFileExtension(Path)
-	// Файл или имя файла
-	file := []byte(Path)
-	if ext != INI {
-
-		// Если нет файла, то создаём и сохраняем с сериализованными данными
-		_, err = os.Stat(Path)
-		if os.IsNotExist(err) {
-			return err
-		}
-		// Читаем данные из файла
-		file, err = os.ReadFile(Path)
+	if ext == nil {
+		// Получаем Extension на основе расширения файла
+		ext, err = getFileExtension(p)
 		if err != nil {
 			return err
 		}
 	}
+	// Проверка файла
+	file, err := checkFile(p)
+	if err != nil {
+		return err
+	}
 
 	// Десериализуем данные в струтуру
-	return ext.unmarshal(file, i)
+	return ext.Unmarshal(file, i)
+}
+
+// Load Указываем файл ОБЯЗАТЕЛЬНО С РАСШИРЕНИЕМ файла, по нему будем определять сериализатор
+func Load(filename string, i interface{}) error {
+	return LoadExtension(filename, i, nil)
+}
+
+func checkFile(path string) (file []byte, err error) {
+
+	// Получаем инфо о существовании файла
+	_, err = os.Stat(path)
+	if os.IsNotExist(err) {
+		return
+	}
+	// Читаем данные из файла
+	return os.ReadFile(path)
 }

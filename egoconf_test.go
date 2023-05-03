@@ -1,6 +1,7 @@
 package egoconf
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 )
@@ -87,4 +88,53 @@ func TestLoad(t *testing.T) {
 		t.Error(err)
 	}
 	fmt.Printf("Ini: %v\n", cfg)
+}
+
+type MyExtension struct {
+	Name string
+}
+
+func (MyExtension) Marshal(v interface{}) ([]byte, error) {
+	return json.Marshal(v)
+}
+
+func (MyExtension) Unmarshal(b []byte, v interface{}) error {
+	return json.Unmarshal(b, v)
+}
+
+func (j MyExtension) String() string {
+	return fmt.Sprintf("name: %s", j.Name)
+}
+
+func TestCustomExtension(t *testing.T) {
+	c := Config{
+		Ports: Ports{
+			Http:  "80",
+			Https: "443",
+			Udp:   "6565",
+		},
+		Postgres: Postgres{
+			Server:   "localhost",
+			Port:     "5432",
+			Username: "user",
+			Password: "pass",
+			Name:     "db",
+			SSL:      false,
+		},
+	}
+
+	ext := &MyExtension{Name: "My"}
+
+	//Yaml
+	err := SaveExtension("config", c, ext)
+	if err != nil {
+		t.Error(err)
+	}
+
+	c1 := Config{}
+	err = LoadExtension("config", &c1, ext)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Yml: %v\n", c1)
 }

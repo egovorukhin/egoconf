@@ -2,75 +2,115 @@ package egoconf
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"errors"
+	"fmt"
 	"gopkg.in/ini.v1"
-
 	"gopkg.in/yaml.v3"
 	"path/filepath"
+	"strings"
 )
 
-type Extension string
-
-const (
-	NONE Extension = ""
-	JSON           = ".json"
-	XML            = ".xml"
-	YAML           = ".yaml"
-	YML            = ".yml"
-	INI            = ".ini"
-)
-
-// Возвращаем расширение файла
-func (ext Extension) String() string {
-	return string(ext)
+type IExtension interface {
+	Marshal(v interface{}) ([]byte, error)
+	Unmarshal(b []byte, v interface{}) error
+	String() string
 }
 
-func (ext Extension) marshal(v interface{}) ([]byte, error) {
+type Extension struct {
+	Name string
+}
 
-	switch ext {
+const (
+	JSON = ".json"
+	XML  = ".xml"
+	YAML = ".yaml"
+	YML  = ".yml"
+	INI  = ".ini"
+)
+
+// Получаем расширение файла и соотносим его с константой
+func getFileExtension(path string) (IExtension, error) {
+
+	switch filepath.Ext(path) {
 	case YAML, YML:
-		return yaml.Marshal(v)
+		return &Yaml{
+			Names: []string{YAML, YML},
+		}, nil
 	case JSON:
-		return json.Marshal(v)
+		return &Json{
+			Name: JSON,
+		}, nil
 	case XML:
-		return xml.Marshal(v)
+		return &Xml{
+			Name: XML,
+		}, nil
+	case INI:
+		return &Ini{
+			Name: INI,
+			Path: path,
+		}, nil
 	}
 
 	return nil, errors.New("Extension is not correctly")
 }
 
-func (ext Extension) unmarshal(b []byte, v interface{}) error {
+type Json Extension
 
-	switch ext {
-	case YAML, YML:
-		return yaml.Unmarshal(b, v)
-	case JSON:
-		return json.Unmarshal(b, v)
-	case XML:
-		return xml.Unmarshal(b, v)
-	case INI:
-		return ini.MapTo(v, string(b))
-	}
-
-	return errors.New("Extension is not correctly")
+func (Json) Marshal(v interface{}) ([]byte, error) {
+	return json.Marshal(v)
 }
 
-// Получаем расширение файла и соотносим его с константой
-func getFileExtension(path string) Extension {
-	return Extension(filepath.Ext(path))
-	/*	switch filepath.Ext(path) {
-		case JSON:
-			return JSON
-		case XML:
-			return XML
-		case YAML:
-			return YAML
-		case YML:
-			return YML
-		case INI:
-			return INI
-		default:
-			return NONE
-		}*/
+func (Json) Unmarshal(b []byte, v interface{}) error {
+	return json.Unmarshal(b, v)
+}
+
+func (j Json) String() string {
+	return fmt.Sprintf("name: %s", j.Name)
+}
+
+type Yaml struct {
+	Names []string
+}
+
+func (Yaml) Marshal(v interface{}) ([]byte, error) {
+	return yaml.Marshal(v)
+}
+
+func (Yaml) Unmarshal(b []byte, v interface{}) error {
+	return yaml.Unmarshal(b, v)
+}
+
+func (y Yaml) String() string {
+	return fmt.Sprintf("names: [%s]", strings.Join(y.Names, ","))
+}
+
+type Xml Extension
+
+func (Xml) Marshal(v interface{}) ([]byte, error) {
+	return yaml.Marshal(v)
+}
+
+func (Xml) Unmarshal(b []byte, v interface{}) error {
+	return yaml.Unmarshal(b, v)
+}
+
+func (x Xml) String() string {
+	return fmt.Sprintf("name: %s", x.Name)
+}
+
+type Ini struct {
+	Name string
+	Path string
+}
+
+func (Ini) Marshal(v interface{}) ([]byte, error) {
+	return nil, nil
+}
+
+func (i Ini) Unmarshal(b []byte, v interface{}) error {
+	return ini.MapTo(v, i.Path)
+}
+
+func (i Ini) String() string {
+	return fmt.Sprintf("name: %s, path: %s", i.Name, i.Path)
 }

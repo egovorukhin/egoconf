@@ -1,1 +1,11 @@
-<Config><Http>80</Http><Https>443</Https><Udp>6565</Udp><Server>localhost</Server><Port>5432</Port><Username>user</Username><Password>pass</Password><Name>db</Name><SSL>false</SSL></Config>
+ports:
+    http: "80"
+    https: "443"
+    udp: "6565"
+postgres:
+    server: localhost
+    port: "5432"
+    username: user
+    password: pass
+    name: db
+    ssl: false

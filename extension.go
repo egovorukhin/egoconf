@@ -51,7 +51,7 @@ func getFileExtension(path string) (IExtension, error) {
 		}, nil
 	}
 
-	return nil, errors.New("Extension is not correctly")
+	return nil, errors.New("extension is not correctly")
 }
 
 type Json Extension
